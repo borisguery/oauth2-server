@@ -8,7 +8,7 @@ namespace Bgy\OAuth2;
 class TokenRequestAttempt
 {
     private $grantType;
-    private $inputData = [];
+    private $inputData;
 
     public function __construct($grantType, InputDataBag $inputData)
     {
