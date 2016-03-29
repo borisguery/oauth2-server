@@ -21,13 +21,68 @@ $ composer require borisguery/oauth2-server
 ## Usage
 
 ``` php
-$skeleton = new League\Skeleton();
-echo $skeleton->echoPhrase('Hello, League!');
+class OAuht2Controller {
+
+    public function tokenAction(Request $request)
+    {
+        $sfPasswordGrantType = new SymfonySecurityPasswordGrantType(
+            $this->container->get('security.user_provider'),
+            $this->container->get('security.encoder_factory')->getEncoder(UserAccount::class)
+        );
+
+        $clientStorage = new InMemoryClientStorage();
+        $defaultClient = new Client(
+            'test',
+            null,
+            [],
+            ['password']
+        );
+
+        $clientStorage->save($defaultClient);
+
+        $configuration = (new ResourceServerConfigurationBuilder())
+            ->setAccessTokenStorage(new InMemoryAccessTokenStorage())
+            ->setClientStorage($clientStorage)
+            ->setRefreshStorage(new InMemoryRefreshTokenStorage())
+            ->setAccessTokenGenerator(new Php7CSPRNGStringGenerator())
+            ->addGrantType($sfPasswordGrantType)
+            ->alwaysRequireAClient(true)
+            ->alwaysGenerateARefreshToken(true)
+            ->build()
+            ->getResourceConfiguration()
+        ;
+
+        $resourceServer = new ResourceServer($configuration);
+
+        $inputDataBag = SymfonyHttpFoundationRequestInputDataBagFactory::fromRequest($request);
+
+        $attemptResult = $resourceServer->requestAccessToken(
+            new TokenRequestAttempt($inputDataBag->getGrantType(), $inputDataBag)
+        );
+
+        if ($attemptResult instanceof SuccessfulTokenRequestAttemptResult) {
+            $statusCode = 200;
+            $response = [
+                'access_token' => $attemptResult->getAccessToken()->getToken(),
+                'expires_in'   => $attemptResult->getAccessToken()->getExpiresIn(),
+                'token_type'   => $attemptResult->getAccessToken()->getTokenType(),
+                'refresh_token' => $attemptResult->getRefreshToken()
+                    ? $attemptResult->getRefreshToken()->getToken()
+                    : null,
+            ];
+        } elseif ($attemptResult instanceof FailedTokenRequestAttemptResult) {
+            $statusCode = 400;
+            $response = [
+                'error' => (string) $attemptResult->getGrantDecision()->getError(),
+                'error_description' => $attemptResult->getGrantDecision()->getError()->getErrorDescription(),
+                'error_uri' => $attemptResult->getGrantDecision()->getError()->getErrorUri(),
+            ];
+        }
+
+        return new Response(json_encode($response), $statusCode, ['Content-Type' => 'application/json']);
+    }
+}
 ```
-
-## Change log
-
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
 ## Testing
 
@@ -37,7 +92,7 @@ $ composer test
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security
 
