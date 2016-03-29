@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SymfonyHttpFoundationRequestInputDataBagFactory
 {
-    static public function fromRequest(Request $request)
+    public static function fromRequest(Request $request)
     {
         return new InputDataBag(
             array_merge_recursive(

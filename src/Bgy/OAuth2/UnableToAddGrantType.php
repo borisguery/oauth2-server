@@ -7,7 +7,7 @@ namespace Bgy\OAuth2;
 
 class UnableToAddGrantType extends \LogicException implements Exception
 {
-    static public function aGrantTypeExtensionIsAlreadyRegisteredForThisIdentifier($identifier, $registeredClassName)
+    public static function aGrantTypeExtensionIsAlreadyRegisteredForThisIdentifier($identifier, $registeredClassName)
     {
         return new self(
             sprintf(

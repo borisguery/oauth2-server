@@ -5,8 +5,7 @@
 
 namespace Bgy\OAuth2\GrantType;
 
-
-class GrantDecision
+final class GrantDecision
 {
     const ALLOWED = 'allowed';
     const DENIED  = 'denied';
@@ -20,7 +19,7 @@ class GrantDecision
 
     private function __construct() {}
 
-    static public function denied(GrantError $error)
+    public static function denied(GrantError $error)
     {
         $d = new self();
         $d->decision = self::DENIED;
@@ -29,7 +28,7 @@ class GrantDecision
         return $d;
     }
 
-    static public function allowed()
+    public static function allowed()
     {
         $d = new self();
         $d->decision = self::ALLOWED;

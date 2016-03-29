@@ -5,8 +5,7 @@
 
 namespace Bgy\OAuth2\GrantType;
 
-
-class GrantError
+final class GrantError
 {
     const INVALID_REQUEST           = 'invalid_request';
     const UNAUTHORIZED_CLIENT       = 'unauthorized_client';
@@ -22,7 +21,9 @@ class GrantError
     private $errorDescription;
     private $errorUri;
 
-    static public function invalidRequest($errorDescription = null, $errorUri = null)
+    private function __construct() {}
+
+    public static function invalidRequest($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::INVALID_REQUEST;
@@ -32,7 +33,7 @@ class GrantError
         return $e;
     }
 
-    static public function unauthorizedClient($errorDescription = null, $errorUri = null)
+    public static function unauthorizedClient($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::UNAUTHORIZED_CLIENT;
@@ -42,7 +43,7 @@ class GrantError
         return $e;
     }
 
-    static public function accessDenied($errorDescription = null, $errorUri = null)
+    public static function accessDenied($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::ACCESS_DENIED;
@@ -52,7 +53,7 @@ class GrantError
         return $e;
     }
 
-    static public function unsupportedResponseType($errorDescription = null, $errorUri = null)
+    public static function unsupportedResponseType($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::UNSUPPORTED_RESPONSE_TYPE;
@@ -63,7 +64,7 @@ class GrantError
     }
 
 
-    static public function invalidGrant($errorDescription = null, $errorUri = null)
+    public static function invalidGrant($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::INVALID_GRANT;
@@ -73,7 +74,7 @@ class GrantError
         return $e;
     }
 
-    static public function invalidScope($errorDescription = null, $errorUri = null)
+    public static function invalidScope($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::INVALID_SCOPE;
@@ -83,7 +84,7 @@ class GrantError
         return $e;
     }
 
-    static public function temporarilyUnavailable($errorDescription = null, $errorUri = null)
+    public static function temporarilyUnavailable($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::TEMPORARILY_UNAVAILABLE;
@@ -93,7 +94,7 @@ class GrantError
         return $e;
     }
 
-    static public function serverError($errorDescription = null, $errorUri = null)
+    public static function serverError($errorDescription = null, $errorUri = null)
     {
         $e = new self();
         $e->error            = self::SERVER_ERROR;
@@ -103,7 +104,7 @@ class GrantError
         return $e;
     }
 
-    static public function none()
+    public static function none()
     {
         $e = new self();
         $e->error = self::NONE;
