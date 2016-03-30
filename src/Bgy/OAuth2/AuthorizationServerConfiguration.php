@@ -9,7 +9,7 @@ use Bgy\OAuth2\Storage\ClientStorage;
 use Bgy\OAuth2\Storage\AccessTokenStorage;
 use Bgy\OAuth2\Storage\RefreshTokenStorage;
 
-class ResourceServerConfiguration
+class AuthorizationServerConfiguration
 {
     private $clientStorage;
     private $accessTokenStorage;

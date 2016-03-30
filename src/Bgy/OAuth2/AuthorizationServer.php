@@ -9,12 +9,12 @@ use Bgy\OAuth2\GrantType\GrantDecision;
 use Bgy\OAuth2\GrantType\GrantError;
 use Bgy\OAuth2\GrantType\GrantType;
 
-class ResourceServer
+class AuthorizationServer
 {
     private $configuration;
     private $clientAuthenticator;
 
-    public function __construct(ResourceServerConfiguration $configuration)
+    public function __construct(AuthorizationServerConfiguration $configuration)
     {
         $this->configuration       = $configuration;
         $this->clientAuthenticator = new ClientAuthenticator(

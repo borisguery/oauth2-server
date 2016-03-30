@@ -10,7 +10,7 @@ use Bgy\OAuth2\Storage\AccessTokenStorage;
 use Bgy\OAuth2\Storage\ClientStorage;
 use Bgy\OAuth2\Storage\RefreshTokenStorage;
 
-class ResourceServerConfigurationBuilder
+class AuthorizationServerConfigurationBuilder
 {
     private $defaultOptions = [
         'client_storage'                  => null,
@@ -126,7 +126,7 @@ class ResourceServerConfigurationBuilder
 
         $this->built = true;
 
-        $this->configuration = new ResourceServerConfiguration(
+        $this->configuration = new AuthorizationServerConfiguration(
             $this->options['client_storage'],
             $this->options['access_token_storage'],
             $this->options['refresh_token_storage'],
@@ -150,7 +150,7 @@ class ResourceServerConfigurationBuilder
         $this->built = false;
     }
 
-    public function getResourceConfiguration()
+    public function getAuthorizationServerConfiguration()
     {
         if (!$this->built) {
 
