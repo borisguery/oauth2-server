@@ -5,6 +5,7 @@
 
 namespace Bgy\OAuth2\GrantType;
 
+use Bgy\OAuth2\ResourceOwner;
 use Bgy\OAuth2\TokenRequestAttempt;
 use Bgy\OAuth2\Utils\GrantTypeUtils;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
@@ -46,7 +47,7 @@ class SymfonySecurityPasswordGrantType implements GrantType
             );
 
             if ($isPasswordValid) {
-                $decision = GrantDecision::allowed();
+                $decision = GrantDecision::allowed(new ResourceOwner($userAccount->getUsername(), get_class($userAccount)));
             } else {
                 $decision = GrantDecision::denied(GrantError::accessDenied('Invalid credentials'));
             }

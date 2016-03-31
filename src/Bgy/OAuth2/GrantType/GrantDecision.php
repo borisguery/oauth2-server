@@ -5,12 +5,20 @@
 
 namespace Bgy\OAuth2\GrantType;
 
+use Bgy\OAuth2\ResourceOwner;
+use Bgy\OAuth2\Utils\Ensure;
+
 final class GrantDecision
 {
     const ALLOWED = 'allowed';
     const DENIED  = 'denied';
 
     private $decision;
+
+    /**
+     * @var ResourceOwner
+     */
+    private $resourceOwnerId;
 
     /**
      * @var GrantError
@@ -28,13 +36,19 @@ final class GrantDecision
         return $d;
     }
 
-    public static function allowed()
+    public static function allowed(ResourceOwner $resourceOwnerId = null)
     {
         $d = new self();
         $d->decision = self::ALLOWED;
+        $d->resourceOwnerId = $resourceOwnerId;
         $d->error    = GrantError::none();
 
         return $d;
+    }
+
+    public function getResourceOwnerId()
+    {
+        return $this->resourceOwnerId;
     }
 
     public function getError()

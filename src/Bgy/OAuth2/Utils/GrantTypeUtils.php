@@ -31,7 +31,7 @@ class GrantTypeUtils
         }
 
         // using != instead of !== does not check the order of the properties
-        if ($grantType->getRequiredInputData() != array_intersect($inputDataKeys, $grantType->getRequiredInputData())) {
+        if ($grantType->getRequiredInputData() != array_values(array_intersect($inputDataKeys, $grantType->getRequiredInputData()))) {
 
             throw new MissingOrInvalidInputData($grantType->getIdentifier(), $inputDataKeys, $grantType->getRequiredInputData());
         }

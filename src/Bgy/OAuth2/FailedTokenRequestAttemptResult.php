@@ -13,8 +13,8 @@ class FailedTokenRequestAttemptResult implements TokenRequestAttemptResult
 
     public function __construct(GrantDecision $grantDecision)
     {
-        if ($grantDecision->isDenied()) {
-            throw new \LogicException('Could not construct FailedTokenRequestResult with a allowed GrantDecision');
+        if ($grantDecision->isAllowed()) {
+            throw new \LogicException('Could not construct FailedTokenRequestResult with an allowed GrantDecision');
         }
 
         $this->grantDecision = $grantDecision;

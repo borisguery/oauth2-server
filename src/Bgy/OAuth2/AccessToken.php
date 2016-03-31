@@ -11,17 +11,15 @@ class AccessToken
     private $expiresIn;
     private $clientId;
     private $resourceOwnerId;
-    private $tokenType;
     private $scopes;
 
-    public function __construct($token, $expiresIn, $clientId, $resourceOwnerId, $tokenType, array $scopes = [])
+    public function __construct($token, $expiresIn, $clientId, $resourceOwnerId, array $scopes = [])
     {
         $this->accessToken     = $token;
         $this->expiresIn       = $expiresIn;
         $this->clientId        = $clientId;
         $this->resourceOwnerId = $resourceOwnerId;
         $this->scopes          = $scopes;
-        $this->tokenType       = $tokenType;
     }
 
     public function getToken()
@@ -47,10 +45,5 @@ class AccessToken
     public function getResourceOwnerId()
     {
         return $this->resourceOwnerId;
-    }
-
-    public function getTokenType()
-    {
-        return $this->tokenType;
     }
 }

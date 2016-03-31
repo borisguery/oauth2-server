@@ -84,8 +84,7 @@ class AuthorizationServer
                 $token,
                 $this->configuration->getAccessTokenTTL(),
                 $tokenRequestAttempt->getInputData()->getClientId(),
-                "",
-                "bearer",
+                $grantDecision->getResourceOwnerId(),
                 []
             );
 
@@ -104,6 +103,7 @@ class AuthorizationServer
             $result = new SuccessfulTokenRequestAttemptResult($grantDecision, $accessToken, $refreshToken);
 
         } else {
+
             $result = new FailedTokenRequestAttemptResult($grantDecision);
         }
 
