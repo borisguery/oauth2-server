@@ -5,6 +5,7 @@
 
 namespace Bgy\OAuth2;
 
+use Bgy\OAuth2\GrantType\GrantType;
 use Bgy\OAuth2\Storage\ClientStorage;
 use Bgy\OAuth2\Storage\AccessTokenStorage;
 use Bgy\OAuth2\Storage\RefreshTokenStorage;
@@ -21,6 +22,9 @@ class AuthorizationServerConfiguration
         'access_token_length'      => 32,
     ];
 
+    /**
+     * @var GrantType[]
+     */
     private $grantTypes = [];
 
     public function __construct(ClientStorage $clientStorage, AccessTokenStorage $accessTokenStorage,
