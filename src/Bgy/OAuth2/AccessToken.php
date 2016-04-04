@@ -2,21 +2,25 @@
 
 namespace Bgy\OAuth2;
 
+use Bgy\OAuth2\Utils\Ensure;
+
 /**
  * @author Boris Guéry <guery.b@gmail.com>
  */
 class AccessToken
 {
     private $accessToken;
-    private $expiresIn;
+    private $expiresAt;
     private $clientId;
     private $resourceOwnerId;
     private $scopes;
 
-    public function __construct($token, $expiresIn, $clientId, $resourceOwnerId, array $scopes = [])
+    public function __construct($token, \DateTimeImmutable $expiresAt, $clientId, ResourceOwner $resourceOwnerId = null, array $scopes = [])
     {
+        Ensure::string($token);
+
         $this->accessToken     = $token;
-        $this->expiresIn       = $expiresIn;
+        $this->expiresAt       = $expiresAt;
         $this->clientId        = $clientId;
         $this->resourceOwnerId = $resourceOwnerId;
         $this->scopes          = $scopes;
@@ -27,9 +31,9 @@ class AccessToken
         return $this->accessToken;
     }
 
-    public function getExpiresIn()
+    public function getExpiresAt()
     {
-        return $this->expiresIn;
+        return $this->expiresAt;
     }
 
     public function getScopes()
