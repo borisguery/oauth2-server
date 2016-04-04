@@ -12,17 +12,17 @@ class AccessToken
     private $accessToken;
     private $expiresAt;
     private $clientId;
-    private $resourceOwnerId;
+    private $resourceOwner;
     private $scopes;
 
-    public function __construct($token, \DateTimeImmutable $expiresAt, $clientId, ResourceOwner $resourceOwnerId = null, array $scopes = [])
+    public function __construct($token, \DateTimeImmutable $expiresAt, $clientId, ResourceOwner $resourceOwner = null, array $scopes = [])
     {
         Ensure::string($token);
 
         $this->accessToken     = $token;
         $this->expiresAt       = $expiresAt;
         $this->clientId        = $clientId;
-        $this->resourceOwnerId = $resourceOwnerId;
+        $this->resourceOwner   = $resourceOwner;
         $this->scopes          = $scopes;
     }
 
@@ -46,8 +46,8 @@ class AccessToken
         return $this->clientId;
     }
 
-    public function getResourceOwnerId()
+    public function getResourceOwner()
     {
-        return $this->resourceOwnerId;
+        return $this->resourceOwner;
     }
 }

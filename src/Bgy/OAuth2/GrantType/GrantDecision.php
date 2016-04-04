@@ -18,7 +18,7 @@ final class GrantDecision
     /**
      * @var ResourceOwner
      */
-    private $resourceOwnerId;
+    private $resourceOwner;
 
     /**
      * @var GrantError
@@ -36,19 +36,19 @@ final class GrantDecision
         return $d;
     }
 
-    public static function allowed(ResourceOwner $resourceOwnerId = null)
+    public static function allowed(ResourceOwner $resourceOwner = null)
     {
         $d = new self();
         $d->decision = self::ALLOWED;
-        $d->resourceOwnerId = $resourceOwnerId;
-        $d->error    = GrantError::none();
+        $d->resourceOwner = $resourceOwner;
+        $d->error         = GrantError::none();
 
         return $d;
     }
 
-    public function getResourceOwnerId()
+    public function getResourceOwner()
     {
-        return $this->resourceOwnerId;
+        return $this->resourceOwner;
     }
 
     public function getError()

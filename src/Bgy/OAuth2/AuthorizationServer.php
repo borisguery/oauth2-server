@@ -128,7 +128,7 @@ class AuthorizationServer
                 new \DateTimeZone('UTC')
             ),
             $tokenRequestAttempt->getInputData()->getClientId(),
-            $grantDecision->getResourceOwnerId(),
+            $grantDecision->getResourceOwner(),
             []
         );
 
