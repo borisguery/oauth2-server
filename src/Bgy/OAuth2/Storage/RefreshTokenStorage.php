@@ -11,5 +11,10 @@ interface RefreshTokenStorage
 {
     public function save(RefreshToken $accessToken);
     public function delete(RefreshToken $accessToken);
+
+    /**
+     * @return RefreshToken
+     * @throws RefreshTokenNotFound
+     */
     public function findByToken($token);
 }

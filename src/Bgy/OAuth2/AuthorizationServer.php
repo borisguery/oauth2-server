@@ -145,7 +145,7 @@ class AuthorizationServer
                 ['length' => $this->configuration->getAccessTokenLength()]
             )
             ;
-            $refreshToken = new RefreshToken($token);
+            $refreshToken = new RefreshToken($token, $accessToken);
 
             $this->configuration->getRefreshTokenStorage()->save($refreshToken);
         }
