@@ -28,86 +28,129 @@ class AuthorizationServer
      */
     public function requestAccessToken(TokenRequestAttempt $tokenRequestAttempt)
     {
-        if (null === $this->getGrantTypeByIdentifier($tokenRequestAttempt->getGrantType())) {
+        if (!$this->checkGrantType($tokenRequestAttempt)) {
 
-            return $this->buildTokenAttemptResult($tokenRequestAttempt, GrantDecision::denied(GrantError::invalidGrant('Unknown grant type')));
+            return new FailedTokenRequestAttemptResult(GrantDecision::denied(GrantError::invalidGrant('Unknown grant type')));
         }
 
-        if ($this->configuration->alwaysRequireAClient()) {
+        if ($this->checkIfAClientIsAlwaysRequired()) {
 
-            if (false === $tokenRequestAttempt->getInputData()->getClientId()) {
+            if (!$this->checkIfAClientIsProvided($tokenRequestAttempt)) {
 
-                return $this->buildTokenAttemptResult($tokenRequestAttempt, GrantDecision::denied(GrantError::invalidRequest('missing client_id')));
+                return new FailedTokenRequestAttemptResult(GrantDecision::denied(GrantError::invalidGrant('Missing client_id')));
             }
 
-            if (false === $this->clientAuthenticator->isClientValid(
-                $tokenRequestAttempt->getInputData()->getClientId(),
-                $tokenRequestAttempt->getInputData()->getClientSecret()
-            )) {
+            if (!$this->checkIfTheProvidedClientIsValid($tokenRequestAttempt)) {
 
-                return $this->buildTokenAttemptResult($tokenRequestAttempt, GrantDecision::denied(GrantError::accessDenied('invalid client credentials')));
+                return new FailedTokenRequestAttemptResult(GrantDecision::denied(GrantError::accessDenied('Invalid client credentials')));
             }
 
-            $client = $this->configuration->getClientStorage()
-                ->findById($tokenRequestAttempt->getInputData()->getClientId())
-            ;
+            if (!$this->checkIfClientSupportsRequestedGrantType($tokenRequestAttempt)) {
 
-            if (!in_array($tokenRequestAttempt->getGrantType(), $client->getAllowedGrantTypes())) {
-
-                return $this->buildTokenAttemptResult($tokenRequestAttempt, GrantDecision::denied(
-                    GrantError::invalidGrant(
-                        sprintf(
-                            'This client doesn\'t support the following grant type: "%s"',
-                            $tokenRequestAttempt->getGrantType()
+                return new FailedTokenRequestAttemptResult(
+                    GrantDecision::denied(
+                        GrantError::invalidGrant(
+                            sprintf(
+                                'This client doesn\'t support the following grant type: "%s"',
+                                $tokenRequestAttempt->getGrantType()
+                            )
                         )
                     )
-                ));
+                );
             }
-
-            return $this->buildTokenAttemptResult($tokenRequestAttempt, $this->getGrantTypeByIdentifier($tokenRequestAttempt->getGrantType())
-                ->grant($tokenRequestAttempt)
-            );
         }
 
-        return $this->buildTokenAttemptResult($tokenRequestAttempt, GrantDecision::denied(GrantError::serverError('unknown error')));
+        $grantDecision = $this->getGrantTypeByIdentifier($tokenRequestAttempt->getGrantType())
+            ->grant($tokenRequestAttempt)
+        ;
+
+        if ($grantDecision->equals(GrantDecision::allowed())) {
+
+            $accessToken = $this->buildAccessToken($tokenRequestAttempt, $grantDecision);
+            $refreshToken = $this->buildRefreshToken($accessToken);
+
+            return new SuccessfulTokenRequestAttemptResult($grantDecision, $accessToken, $refreshToken);
+        }
+
+        return new FailedTokenRequestAttemptResult($grantDecision);
     }
 
-    private function buildTokenAttemptResult(TokenRequestAttempt $tokenRequestAttempt, GrantDecision $grantDecision)
+    private function checkGrantType(TokenRequestAttempt $tokenRequestAttempt)
     {
-        if ($grantDecision->isAllowed()) {
+        return (null !== $this->getGrantTypeByIdentifier($tokenRequestAttempt->getGrantType()));
+    }
 
-            $token = $this->configuration->getTokenGenerator()->generate(
-                ['length' => $this->configuration->getAccessTokenLength()]
-            );
+    private function checkIfAClientIsAlwaysRequired()
+    {
 
-            $accessToken = new AccessToken(
-                $token,
-                $this->configuration->getAccessTokenTTL(),
-                $tokenRequestAttempt->getInputData()->getClientId(),
-                $grantDecision->getResourceOwnerId(),
-                []
-            );
+        return $this->configuration->alwaysRequireAClient();
+    }
 
-            $this->configuration->getAccessTokenStorage()->save($accessToken);
+    private function checkIfAClientIsProvided(TokenRequestAttempt $tokenRequestAttempt)
+    {
+        return (false === $tokenRequestAttempt->getInputData()->getClientId());
+    }
 
-            $refreshToken = null;
-            if ($this->configuration->alwaysGenerateARefreshToken()) {
-                $token = $this->configuration->getTokenGenerator()->generate(
-                    ['length' => $this->configuration->getAccessTokenLength()]
-                );
-                $refreshToken = new RefreshToken($token);
+    private function checkIfTheProvidedClientIsValid(TokenRequestAttempt $tokenRequestAttempt)
+    {
+        return $this->clientAuthenticator->isClientValid(
+            $tokenRequestAttempt->getInputData()->getClientId(),
+            $tokenRequestAttempt->getInputData()->getClientSecret()
+        );
+    }
 
-                $this->configuration->getRefreshTokenStorage()->save($refreshToken);
-            }
+    private function checkIfClientSupportsRequestedGrantType(TokenRequestAttempt $tokenRequestAttempt)
+    {
+        $client = $this->configuration->getClientStorage()
+            ->findById($tokenRequestAttempt->getInputData()->getClientId())
+        ;
 
-            $result = new SuccessfulTokenRequestAttemptResult($grantDecision, $accessToken, $refreshToken);
+        return in_array($tokenRequestAttempt->getGrantType(), $client->getAllowedGrantTypes());
+    }
 
-        } else {
+    private function buildAccessToken(TokenRequestAttempt $tokenRequestAttempt, GrantDecision $grantDecision)
+    {
+        if ($grantDecision->isDenied()) {
 
-            $result = new FailedTokenRequestAttemptResult($grantDecision);
+            throw new \LogicException('Unable to build an access token with a denied decision');
         }
 
-        return $result;
+        $token = $this->configuration->getTokenGenerator()->generate(
+            ['length' => $this->configuration->getAccessTokenLength()]
+        )
+        ;
+
+        $accessToken = new AccessToken(
+            $token,
+            \DateTimeImmutable::createFromFormat(
+                'U',
+                date('U') + $this->configuration->getAccessTokenTTL(),
+                new \DateTimeZone('UTC')
+            ),
+            $tokenRequestAttempt->getInputData()->getClientId(),
+            $grantDecision->getResourceOwnerId(),
+            []
+        );
+
+        $this->configuration->getAccessTokenStorage()->save($accessToken);
+
+        return $accessToken;
+    }
+
+    private function buildRefreshToken(AccessToken $accessToken)
+    {
+        $refreshToken = null;
+        if ($this->configuration->alwaysGenerateARefreshToken()) {
+            $token = $this->configuration->getTokenGenerator()->generate(
+                ['length' => $this->configuration->getAccessTokenLength()]
+            )
+            ;
+            $refreshToken = new RefreshToken($token);
+
+            $this->configuration->getRefreshTokenStorage()->save($refreshToken);
+        }
+
+        return $refreshToken;
     }
 
     /**
@@ -116,11 +159,13 @@ class AuthorizationServer
      */
     private function getGrantTypeByIdentifier($identifier)
     {
-        if (!isset($this->configuration->getGrantTypeExtensions()[$identifier])) {
+        foreach ($this->configuration->getGrantTypeExtensions() as $grantTypeExtension) {
+            if (strtolower($identifier) === strtolower($grantTypeExtension->getIdentifier())) {
 
-            return null;
+                return $grantTypeExtension;
+            }
         }
 
-        return $this->configuration->getGrantTypeExtensions()[$identifier];
+        return null;
     }
 }

@@ -7,18 +7,16 @@ namespace Bgy\OAuth2;
 
 class TokenRequestAttempt
 {
-    private $grantType;
     private $inputData;
 
-    public function __construct($grantType, InputDataBag $inputData)
+    public function __construct(InputDataBag $inputData)
     {
-        $this->grantType = $grantType;
         $this->inputData = $inputData;
     }
 
     public function getGrantType()
     {
-        return $this->grantType;
+        return $this->inputData->getGrantType();
     }
 
     public function getInputData()
