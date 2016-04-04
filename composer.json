@@ -32,5 +32,8 @@
     "scripts": {
         "test": "phpunit"
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "suggest": {
+        "borisguery/oauth2-server-storage-dbal": "Provides DBAL storage implementation"
+    }
 }
