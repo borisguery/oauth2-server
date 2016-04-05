@@ -11,5 +11,10 @@ interface AccessTokenStorage
 {
     public function save(AccessToken $accessToken);
     public function delete(AccessToken $accessToken);
+
+    /**
+     * @return AccessToken
+     * @throws AccessTokenNotFound
+     */
     public function findByToken($token);
 }

@@ -50,4 +50,9 @@ class AccessToken
     {
         return $this->resourceOwner;
     }
+
+    public function isExpired()
+    {
+        return ($this->expiresAt < new \DateTime('now', new \DateTimeZone('UTC')));
+    }
 }

@@ -19,6 +19,7 @@ class AuthorizationServerConfiguration
     private $options = [
         'always_require_a_client'  => false,
         'access_token_ttl'         => 3600,
+        'refresh_token_ttl'        => 3600,
         'access_token_length'      => 32,
     ];
 
@@ -73,6 +74,11 @@ class AuthorizationServerConfiguration
     public function getAccessTokenTTL()
     {
         return $this->options['access_token_ttl'];
+    }
+
+    public function getRefreshTokenTTL()
+    {
+        return $this->options['refresh_token_ttl'];
     }
 
     public function getTokenGenerator()

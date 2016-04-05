@@ -120,13 +120,19 @@ class AuthorizationServer
         )
         ;
 
+        $expiresAt = new \DateTime('now', new \DateTimeZone('UTC'));
+        $expiresAt->add(
+            \DateInterval::createFromDateString(
+                sprintf(
+                    "%d seconds",
+                    $this->configuration->getAccessTokenTTL()
+                )
+            )
+        );
+
         $accessToken = new AccessToken(
             $token,
-            \DateTimeImmutable::createFromFormat(
-                'U',
-                date('U') + $this->configuration->getAccessTokenTTL(),
-                new \DateTimeZone('UTC')
-            ),
+            \DateTimeImmutable::createFromMutable($expiresAt),
             $tokenRequestAttempt->getInputData()->getClientId(),
             $grantDecision->getResourceOwner(),
             []
@@ -145,7 +151,21 @@ class AuthorizationServer
                 ['length' => $this->configuration->getAccessTokenLength()]
             )
             ;
-            $refreshToken = new RefreshToken($token, $accessToken);
+            $expiresAt = new \DateTime('now', new \DateTimeZone('UTC'));
+            $expiresAt->add(
+                \DateInterval::createFromDateString(
+                    sprintf(
+                        "%d seconds",
+                        $this->configuration->getRefreshTokenTTL()
+                    )
+                )
+            );
+
+            $refreshToken = new RefreshToken(
+                $token,
+                $accessToken,
+                \DateTimeImmutable::createFromMutable($expiresAt)
+            );
 
             $this->configuration->getRefreshTokenStorage()->save($refreshToken);
         }

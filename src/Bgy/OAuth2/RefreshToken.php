@@ -9,11 +9,13 @@ class RefreshToken
 {
     private $token;
     private $associatedAccessToken;
+    private $expiresAt;
 
-    public function __construct($token, AccessToken $associatedAccessToken)
+    public function __construct($token, AccessToken $associatedAccessToken, \DateTimeImmutable $expiresAt)
     {
         $this->token                 = $token;
         $this->associatedAccessToken = $associatedAccessToken;
+        $this->expiresAt             = $expiresAt;
     }
 
     public function getToken()
@@ -24,5 +26,10 @@ class RefreshToken
     public function getAssociatedAccessToken()
     {
         return $this->associatedAccessToken;
+    }
+
+    public function getExpiresAt()
+    {
+        return $this->expiresAt;
     }
 }
