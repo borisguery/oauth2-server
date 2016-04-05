@@ -82,13 +82,12 @@ class AuthorizationServer
 
     private function checkIfAClientIsAlwaysRequired()
     {
-
         return $this->configuration->alwaysRequireAClient();
     }
 
     private function checkIfAClientIsProvided(TokenRequestAttempt $tokenRequestAttempt)
     {
-        return (false === $tokenRequestAttempt->getInputData()->getClientId());
+        return (null !== $tokenRequestAttempt->getInputData()->getClientId());
     }
 
     private function checkIfTheProvidedClientIsValid(TokenRequestAttempt $tokenRequestAttempt)
