@@ -64,8 +64,6 @@ class RefreshTokenGrantType implements GrantType
 
             return GrantDecision::denied(GrantError::accessDenied());
         }
-
-        return GrantDecision::denied(GrantError::accessDenied());
     }
 
     public function getRequiredInputData()
