@@ -9,7 +9,8 @@ use Bgy\OAuth2\Utils\Ensure;
 
 class ResourceOwner
 {
-    private $resourceOwnerId, $resourceOwnerType;
+    private $resourceOwnerId;
+    private $resourceOwnerType;
 
     public function __construct($resourceOwnerId, $resourceOwnerType)
     {
