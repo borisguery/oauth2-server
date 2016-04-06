@@ -5,8 +5,6 @@
 
 namespace Bgy\OAuth2\Utils;
 
-use Assert\Assertion;
-
 class Ensure extends Assertion
 {
     public static function positiveIntegerOrZero($value, $message = null, $propertyPath = null)
