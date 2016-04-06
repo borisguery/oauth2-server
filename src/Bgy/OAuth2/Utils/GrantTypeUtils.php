@@ -12,7 +12,7 @@ use Bgy\OAuth2\TokenRequestAttempt;
 
 class GrantTypeUtils
 {
-    static public function ensureRequestedGrantTypeIsSupported(GrantType $grantType, TokenRequestAttempt $tokenRequestAttempt)
+    public static function ensureRequestedGrantTypeIsSupported(GrantType $grantType, TokenRequestAttempt $tokenRequestAttempt)
     {
         if (strtolower($grantType->getIdentifier()) !== strtolower($tokenRequestAttempt->getGrantType())) {
 
@@ -20,7 +20,7 @@ class GrantTypeUtils
         }
     }
 
-    static public function ensureInputDataAreValid(GrantType $grantType, TokenRequestAttempt $tokenRequestAttempt)
+    public static function ensureInputDataAreValid(GrantType $grantType, TokenRequestAttempt $tokenRequestAttempt)
     {
         $inputDataKeys = $tokenRequestAttempt->getInputData()->all();
 

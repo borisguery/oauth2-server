@@ -9,7 +9,7 @@ use Assert\Assertion;
 
 class Ensure extends Assertion
 {
-    static public function positiveIntegerOrZero($value, $message = null, $propertyPath = null)
+    public static function positiveIntegerOrZero($value, $message = null, $propertyPath = null)
     {
         \Assert\that($value, $message, $propertyPath)
             ->integer()
@@ -17,7 +17,7 @@ class Ensure extends Assertion
         ;
     }
 
-    static public function positiveInteger($value, $message = null, $propertyPath = null)
+    public static function positiveInteger($value, $message = null, $propertyPath = null)
     {
         \Assert\that($value, $message, $propertyPath)
             ->integer()

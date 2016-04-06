@@ -9,7 +9,7 @@ use Bgy\OAuth2\GrantType\MissingOrInvalidInputData;
 
 class InputDataValidator
 {
-    static public function ensureInputDataAreValid($grantTypeIdentifier, array $inputData, array $requiredDataKeys)
+    public static function ensureInputDataAreValid($grantTypeIdentifier, array $inputData, array $requiredDataKeys)
     {
         // check if we got the actual input data or just its keys
 
