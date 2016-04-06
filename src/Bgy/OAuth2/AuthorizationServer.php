@@ -19,6 +19,7 @@ class AuthorizationServer
     private $accessTokenStorage;
     private $refreshTokenStorage;
     private $clientAuthenticator;
+    private $grantTypeExtensions;
 
     public function __construct(AuthorizationServerConfiguration $configuration,
                                 ClientStorage $clientStorage,
