@@ -9,8 +9,8 @@ use Bgy\OAuth2\RefreshToken;
  */
 interface RefreshTokenStorage
 {
-    public function save(RefreshToken $accessToken);
-    public function delete(RefreshToken $accessToken);
+    public function save(RefreshToken $refreshToken);
+    public function delete(RefreshToken $refreshToken);
 
     /**
      * @return RefreshToken

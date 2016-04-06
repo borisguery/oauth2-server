@@ -8,18 +8,30 @@ namespace Bgy\OAuth2;
 use Bgy\OAuth2\GrantType\GrantDecision;
 use Bgy\OAuth2\GrantType\GrantError;
 use Bgy\OAuth2\GrantType\GrantType;
+use Bgy\OAuth2\Storage\AccessTokenStorage;
+use Bgy\OAuth2\Storage\ClientStorage;
+use Bgy\OAuth2\Storage\RefreshTokenStorage;
 
 class AuthorizationServer
 {
     private $configuration;
+    private $clientStorage;
+    private $accessTokenStorage;
+    private $refreshTokenStorage;
     private $clientAuthenticator;
 
-    public function __construct(AuthorizationServerConfiguration $configuration)
+    public function __construct(AuthorizationServerConfiguration $configuration,
+                                ClientStorage $clientStorage,
+                                AccessTokenStorage $accessTokenStorage,
+                                RefreshTokenStorage $refreshTokenStorage,
+                                array $grantTypeExtensions)
     {
         $this->configuration       = $configuration;
-        $this->clientAuthenticator = new ClientAuthenticator(
-            $this->configuration->getClientStorage()
-        );
+        $this->clientStorage       = $clientStorage;
+        $this->accessTokenStorage  = $accessTokenStorage;
+        $this->refreshTokenStorage = $refreshTokenStorage;
+        $this->grantTypeExtensions = $grantTypeExtensions;
+        $this->clientAuthenticator = new ClientAuthenticator($clientStorage);
     }
 
     /**
@@ -100,7 +112,7 @@ class AuthorizationServer
 
     private function checkIfClientSupportsRequestedGrantType(TokenRequestAttempt $tokenRequestAttempt)
     {
-        $client = $this->configuration->getClientStorage()
+        $client = $this->clientStorage
             ->findById($tokenRequestAttempt->getInputData()->getClientId())
         ;
 
@@ -137,7 +149,7 @@ class AuthorizationServer
             []
         );
 
-        $this->configuration->getAccessTokenStorage()->save($accessToken);
+        $this->accessTokenStorage->save($accessToken);
 
         return $accessToken;
     }
@@ -166,7 +178,7 @@ class AuthorizationServer
                 \DateTimeImmutable::createFromMutable($expiresAt)
             );
 
-            $this->configuration->getRefreshTokenStorage()->save($refreshToken);
+            $this->refreshTokenStorage->save($refreshToken);
         }
 
         return $refreshToken;
@@ -178,7 +190,7 @@ class AuthorizationServer
      */
     private function getGrantTypeByIdentifier($identifier)
     {
-        foreach ($this->configuration->getGrantTypeExtensions() as $grantTypeExtension) {
+        foreach ($this->grantTypeExtensions as $grantTypeExtension) {
             if (strtolower($identifier) === strtolower($grantTypeExtension->getIdentifier())) {
 
                 return $grantTypeExtension;

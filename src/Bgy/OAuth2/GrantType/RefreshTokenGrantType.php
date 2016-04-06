@@ -14,10 +14,12 @@ use Bgy\OAuth2\Utils\GrantTypeUtils;
 class RefreshTokenGrantType implements GrantType
 {
     private $refreshTokenStorage;
+    private $revokeRefreshTokenWhenUsed;
 
-    public function __construct(RefreshTokenStorage $refreshTokenStorage = null)
+    public function __construct(RefreshTokenStorage $refreshTokenStorage = null, $revokeRefreshTokenWhenUsed)
     {
-        $this->refreshTokenStorage = $refreshTokenStorage;
+        $this->refreshTokenStorage        = $refreshTokenStorage;
+        $this->revokeRefreshTokenWhenUsed = (bool) $revokeRefreshTokenWhenUsed;
     }
 
     public function setRefreshTokenStorage(RefreshTokenStorage $refreshTokenStorage)
@@ -40,6 +42,16 @@ class RefreshTokenGrantType implements GrantType
         try {
 
             $refreshToken = $this->refreshTokenStorage->findByToken($tokenRequestAttempt->getInputData()->getRefreshToken());
+
+            if ($refreshToken->isRevoked()) {
+
+                return GrantDecision::denied(GrantError::accessDenied());
+            }
+
+            if ($this->revokeRefreshTokenWhenUsed) {
+                $refreshToken->revoke();
+                $this->refreshTokenStorage->save($refreshToken);
+            }
 
             return GrantDecision::allowed(
                 new ResourceOwner(

@@ -21,6 +21,7 @@ class AuthorizationServerConfigurationBuilder
         'access_token_length'             => 32,
         'access_token_ttl'                => 3600,
         'always_generate_a_refresh_token' => false,
+        'revoke_refresh_token_when_used'  => true,
         'grant_types'                     => []
     ];
 
@@ -33,6 +34,7 @@ class AuthorizationServerConfigurationBuilder
         'access_token_length'             => 32,
         'access_token_ttl'                => 3600,
         'always_generate_a_refresh_token' => false,
+        'revoke_refresh_token_when_used'  => true,
         'grant_types'                     => []
     ];
 
@@ -68,6 +70,13 @@ class AuthorizationServerConfigurationBuilder
     public function alwaysRequireAClient($flag)
     {
         $this->options['always_require_a_client'] = (bool) $flag;
+
+        return $this;
+    }
+
+    public function shouldRevokeRefreshTokenWhenUsed($flag)
+    {
+        $this->options['revoke_refresh_token_when_used'] = (bool) $flag;
 
         return $this;
     }

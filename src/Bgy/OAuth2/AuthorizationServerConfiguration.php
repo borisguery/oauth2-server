@@ -12,53 +12,19 @@ use Bgy\OAuth2\Storage\RefreshTokenStorage;
 
 class AuthorizationServerConfiguration
 {
-    private $clientStorage;
-    private $accessTokenStorage;
-    private $refreshTokenStorage;
     private $tokenGenerator;
     private $options = [
-        'always_require_a_client'  => false,
-        'access_token_ttl'         => 3600,
-        'refresh_token_ttl'        => 3600,
-        'access_token_length'      => 32,
+        'always_require_a_client'        => false,
+        'access_token_ttl'               => 3600,
+        'refresh_token_ttl'              => 3600,
+        'access_token_length'            => 32,
+        'revoke_refresh_token_when_used' => true,
     ];
 
-    /**
-     * @var GrantType[]
-     */
-    private $grantTypes = [];
-
-    public function __construct(ClientStorage $clientStorage, AccessTokenStorage $accessTokenStorage,
-                                RefreshTokenStorage $refreshTokenStorage, array $grantTypes,
-                                TokenGenerator $tokenGenerator,
-                                array $options = [])
+    public function __construct(TokenGenerator $tokenGenerator, array $options = [])
     {
-        $this->clientStorage        = $clientStorage;
-        $this->accessTokenStorage   = $accessTokenStorage;
-        $this->refreshTokenStorage  = $refreshTokenStorage;
-        $this->grantTypes           = $grantTypes;
         $this->tokenGenerator       = $tokenGenerator;
         $this->options              = array_merge($this->options, $options);
-    }
-
-    public function getClientStorage()
-    {
-        return $this->clientStorage;
-    }
-
-    public function getAccessTokenStorage()
-    {
-        return $this->accessTokenStorage;
-    }
-
-    public function getRefreshTokenStorage()
-    {
-        return $this->refreshTokenStorage;
-    }
-
-    public function getGrantTypeExtensions()
-    {
-        return $this->grantTypes;
     }
 
     public function alwaysRequireAClient()
@@ -69,6 +35,11 @@ class AuthorizationServerConfiguration
     public function alwaysGenerateARefreshToken()
     {
         return $this->options['always_generate_a_refresh_token'];
+    }
+
+    public function shouldRevokeRefreshTokenWhenUsed()
+    {
+        return $this->options['revoke_refresh_token_when_used'];
     }
 
     public function getAccessTokenTTL()
