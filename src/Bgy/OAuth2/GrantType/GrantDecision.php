@@ -71,7 +71,7 @@ final class GrantDecision
         return $this->decision;
     }
 
-    public function equals(self $decision)
+    public function equals(GrantDecision $decision)
     {
         return $this->decision === $decision->decision;
     }
