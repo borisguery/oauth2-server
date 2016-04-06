@@ -5,37 +5,24 @@
 
 namespace Bgy\OAuth2;
 
-use Bgy\OAuth2\GrantType\GrantType;
-use Bgy\OAuth2\Storage\AccessTokenStorage;
-use Bgy\OAuth2\Storage\ClientStorage;
-use Bgy\OAuth2\Storage\RefreshTokenStorage;
-
 class AuthorizationServerConfigurationBuilder
 {
     private $defaultOptions = [
-        'client_storage'                  => null,
-        'access_token_storage'            => null,
-        'refresh_token_storage'           => null,
         'access_token_generator'          => null,
         'always_require_a_client'         => false,
         'access_token_length'             => 32,
         'access_token_ttl'                => 3600,
         'always_generate_a_refresh_token' => false,
         'revoke_refresh_token_when_used'  => true,
-        'grant_types'                     => []
     ];
 
     private $options = [
-        'client_storage'                  => null,
-        'access_token_storage'            => null,
-        'refresh_token_storage'           => null,
         'access_token_generator'          => null,
         'always_require_a_client'         => false,
         'access_token_length'             => 32,
         'access_token_ttl'                => 3600,
         'always_generate_a_refresh_token' => false,
         'revoke_refresh_token_when_used'  => true,
-        'grant_types'                     => []
     ];
 
     private $built = false;
@@ -44,27 +31,6 @@ class AuthorizationServerConfigurationBuilder
 
     public function __construct()
     {
-    }
-
-    public function setClientStorage(ClientStorage $clientStorage)
-    {
-        $this->options['client_storage'] = $clientStorage;
-
-        return $this;
-    }
-
-    public function setAccessTokenStorage(AccessTokenStorage $clientStorage)
-    {
-        $this->options['access_token_storage'] = $clientStorage;
-
-        return $this;
-    }
-
-    public function setRefreshStorage(RefreshTokenStorage $clientStorage)
-    {
-        $this->options['refresh_token_storage'] = $clientStorage;
-
-        return $this;
     }
 
     public function alwaysRequireAClient($flag)
@@ -103,21 +69,6 @@ class AuthorizationServerConfigurationBuilder
         return $this;
     }
 
-    public function addGrantType(GrantType $grantType, $overrideExisting = false)
-    {
-        if (isset($this->options['grant_types'][$grantType->getIdentifier()]) && !$overrideExisting) {
-
-            throw UnableToAddGrantType::aGrantTypeExtensionIsAlreadyRegisteredForThisIdentifier(
-                $grantType->getIdentifier(),
-                get_class($this->options['grant_types'][$grantType->getIdentifier()])
-            );
-        }
-
-        $this->options['grant_types'][$grantType->getIdentifier()] = $grantType;
-
-        return $this;
-    }
-
     public function build()
     {
         // all options without a default value (not null) are required
@@ -136,10 +87,6 @@ class AuthorizationServerConfigurationBuilder
         $this->built = true;
 
         $this->configuration = new AuthorizationServerConfiguration(
-            $this->options['client_storage'],
-            $this->options['access_token_storage'],
-            $this->options['refresh_token_storage'],
-            $this->options['grant_types'],
             $this->options['access_token_generator'],
             [
                 'always_require_a_client'         => $this->options['always_require_a_client'],
